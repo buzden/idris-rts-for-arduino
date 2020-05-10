@@ -524,7 +524,7 @@ VAL idris_castBitsStr(VM* vm, VAL i) {
     case CT_BITS64:
         // max length 64 bit unsigned int str 20 chars (18,446,744,073,709,551,615)
         cl = allocStr(vm, 21, 0);
-        cl->slen = sprintf(cl->str, "%" PRIu64, GETBITS64(i));
+        cl->slen = sprintf(cl->str, "%llu", GETBITS64(i));
         break;
     default:
         fprintf(stderr, "Fatal Error: ClosureType %d, not an integer type", ty);
