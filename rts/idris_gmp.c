@@ -12,7 +12,7 @@
 // This is highly dodgy and needs to be done better because who knows if
 // GMP will need to allocate more than 64k... better to work out how
 // much space is needed (or find another way of preventing copying)
-#define IDRIS_MAXGMP 65536
+#define IDRIS_MAXGMP 128
 
 void init_gmpalloc(void) {
     mp_set_memory_functions(idris_alloc, idris_realloc, idris_free);
@@ -168,7 +168,7 @@ VAL idris_bigPlus(VM* vm, VAL x, VAL y) {
             return ADD(x, y);
         }
         i_int res = vx + vy;
-        if (res >= 1<<30 || res <= -(1 << 30)) {
+        if (res >= 1L<<30 || res <= -(1L << 30)) {
             return bigAdd(vm, GETBIG(vm, x), GETBIG(vm, y));
         } else {
             return MKINT(res);
@@ -186,7 +186,7 @@ VAL idris_bigMinus(VM* vm, VAL x, VAL y) {
             return INTOP(-, x, y);
         }
         i_int res = vx - vy;
-        if (res >= 1<<30 || res <= -(1 << 30)) {
+        if (res >= 1L<<30 || res <= -(1L << 30)) {
             return bigSub(vm, GETBIG(vm, x), GETBIG(vm, y));
         } else {
             return MKINT(res);
@@ -202,12 +202,12 @@ VAL idris_bigTimes(VM* vm, VAL x, VAL y) {
         i_int vy = GETINT(y);
         // we could work out likelihood of overflow by checking the number
         // of necessary bits. Here's a quick conservative hack instead.
-        if ((vx < (1<<15) && vy < (1<16)) ||
-            (vx < (1<<16) && vy < (1<15)) ||
-            (vx < (1<<20) && vy < (1<11)) ||
-            (vx < (1<<11) && vy < (1<20)) ||
-            (vx < (1<<23) && vy < (1<<8)) ||
-            (vx < (1<<8) && vy < (1<<23))) { // ultra-conservative!
+        if ((vx < (1L<<15) && vy < (1L<<16)) ||
+            (vx < (1L<<16) && vy < (1L<<15)) ||
+            (vx < (1L<<20) && vy < (1L<<11)) ||
+            (vx < (1L<<11) && vy < (1L<<20)) ||
+            (vx < (1L<<23) && vy < (1L<<8)) ||
+            (vx < (1L<<8) && vy < (1L<<23))) { // ultra-conservative!
             return INTOP(*,x,y);
         } else {
             return bigMul(vm, GETBIG(vm, x), GETBIG(vm, y));
